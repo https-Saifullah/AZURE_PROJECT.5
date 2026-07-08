@@ -1,5 +1,6 @@
+streamlit
 python-dotenv
 openai
 pymupdf
 azure-search-documents
-streamlit
+azure-core
