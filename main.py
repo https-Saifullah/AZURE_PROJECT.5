@@ -34,6 +34,11 @@ client=AzureOpenAI(
 )
 
 def create_index():
+    index_client=SearchIndexClient(search_endpoint,AzureKeyCredential(search_key))
+    try:
+        index_client.delete_index(index_name)
+    except Exception:
+        pass
     idx=SearchIndex(
         name=index_name,
         fields=[
@@ -43,7 +48,7 @@ def create_index():
             SimpleField(name="page",type="Edm.Int32"),
         ]
     )
-    SearchIndexClient(search_endpoint,AzureKeyCredential(search_key)).create_or_update_index(idx)
+    index_client.create_index(idx)
 
 try:
     create_index()
@@ -144,12 +149,15 @@ with right:
                 context=[]
 
                 for r in results:
-                    ranking[r["filename"]]+=1
-                    sources.append((r["filename"],r["page"]))
+                    filename=r.get("filename","Unknown Document")
+                    page=r.get("page","?")
+                    content=r.get("content","")
+                    ranking[filename]+=1
+                    sources.append((filename,page))
                     context.append(
-                        f"Document: {r['filename']}\n"
-                        f"Page: {r['page']}\n"
-                        f"{r['content']}"
+                        f"Document: {filename}\n"
+                        f"Page: {page}\n"
+                        f"{content}"
                     )
 
                 system_prompt=f"""
