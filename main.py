@@ -596,68 +596,69 @@ Context:
 
                 st.markdown(answer)
              # ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
 # Sources
 # ---------------------------------------------------------
 
-st.markdown("---")
-st.markdown("### 📚 Sources")
+if "sources" in locals() and sources:
 
-shown = set()
+    st.markdown("---")
+    st.markdown("### 📚 Sources")
 
-for filename, page in sources:
+    shown = set()
 
-    if (filename, page) in shown:
-        continue
+    for filename, page in sources:
 
-    shown.add((filename, page))
+        if (filename, page) in shown:
+            continue
 
-    st.markdown(
-        f"""
+        shown.add((filename, page))
+
+        st.markdown(
+            f"""
 <span class="amd-source-badge">
 📄 <b>{filename}</b> &nbsp;|&nbsp; Page {page}
 </span>
 """,
-        unsafe_allow_html=True,
-    )
+            unsafe_allow_html=True,
+        )
 
 # ---------------------------------------------------------
 # Relevance Ranking
 # ---------------------------------------------------------
 
-st.markdown("---")
-st.markdown("### ⭐ Top Matching Documents")
+if "ranking" in locals() and ranking:
 
-total_hits = sum(ranking.values())
+    st.markdown("---")
+    st.markdown("### ⭐ Top Matching Documents")
 
-for i, (filename, hits) in enumerate(
-    ranking.most_common(),
-    start=1,
-):
+    total_hits = sum(ranking.values())
 
-    percent = round(hits * 100 / total_hits)
+    for i, (filename, hits) in enumerate(
+        ranking.most_common(),
+        start=1,
+    ):
 
-    st.markdown(
-        f"""
-**{i}. {filename}**
+        percent = round(hits * 100 / total_hits)
 
-{percent}% relevance
+        st.markdown(f"**{i}. {filename}**")
 
-""",
-    )
-
-    st.progress(percent / 100)
+        st.progress(percent / 100)
 
 # ---------------------------------------------------------
 # Save Conversation
 # ---------------------------------------------------------
 
-st.session_state.messages.append(
-    {
-        "role": "assistant",
-        "content": answer,
-    }
-)
-def ensure_index():
+if "answer" in locals():
+
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": answer,
+        }
+    )
 
     try:
 
